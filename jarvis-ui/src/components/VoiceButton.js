@@ -76,7 +76,7 @@ export default function VoiceButton({
   className = "",
 }) {
   const isUnsupported = !supported;
-  const isActive      = listening || speaking;
+  // const isActive      = listening || speaking; // removido para corrigir lint
 
   const handleClick = () => {
     if (isUnsupported || disabled) return;
