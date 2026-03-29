@@ -1,0 +1,307 @@
+/* TasksPanel.css */
+
+.tasks-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.tasks-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.tasks-panel__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+.btn-new-task {
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-new-task:hover { opacity: 0.85; }
+
+/* Summary */
+.tasks-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-item {
+  background: var(--surface);
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.summary-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.summary-item--yellow .summary-num { color: #facc15; }
+.summary-item--blue .summary-num { color: #60a5fa; }
+.summary-item--green .summary-num { color: #4ade80; }
+
+/* Form */
+.task-form {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface-2);
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.task-form__input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.task-form__input:focus { border-color: var(--accent); }
+.task-form__input::placeholder { color: var(--text-muted); }
+.task-form__textarea { resize: none; }
+
+.task-form__row {
+  display: flex;
+  gap: 8px;
+}
+
+.task-form__select {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.btn-create {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-create:hover { opacity: 0.85; }
+
+/* Filter */
+.tasks-filter {
+  display: flex;
+  gap: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.filter-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 11px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  border-radius: 0;
+}
+
+.filter-btn:first-child { border-radius: 6px 0 0 6px; }
+.filter-btn:last-child { border-radius: 0 6px 6px 0; }
+
+.filter-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* List */
+.tasks-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tasks-list::-webkit-scrollbar { width: 4px; }
+.tasks-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.tasks-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 30px 0;
+}
+
+/* Task Card */
+.task-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.task-card:hover { border-color: var(--accent); }
+
+.task-card--done {
+  opacity: 0.5;
+}
+
+.task-card--done .task-card__title {
+  text-decoration: line-through;
+}
+
+.task-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-card__priority {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-card__title {
+  flex: 1;
+  margin: 0;
+  font-size: 0.87rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-card__status {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.task-card__chevron {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.task-card__body {
+  padding: 0 14px 14px;
+  animation: fadeIn 0.2s ease;
+}
+
+.task-card__desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.task-card__meta {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.task-card__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.task-card__select {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: var(--text);
+  font-size: 0.78rem;
+  outline: none;
+}
+
+.btn-complete {
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #4ade80;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-complete:hover { background: rgba(74, 222, 128, 0.25); }
+
+.btn-delete {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #f87171;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover { background: rgba(248, 113, 113, 0.2); }

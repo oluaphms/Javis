@@ -1,0 +1,94 @@
+/* StatusBar.css */
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.status-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-bar__logo {
+  color: var(--accent);
+  font-size: 1.3rem;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-bar__name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.status-bar__version {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px 7px;
+}
+
+.status-bar__indicators {
+  display: flex;
+  gap: 20px;
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.indicator__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.indicator--online .indicator__dot {
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+  animation: blink 2s ease-in-out infinite;
+}
+
+.indicator--offline .indicator__dot {
+  background: #f87171;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.indicator__icon {
+  font-size: 0.9rem;
+}
+
+.status-bar__time {
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  color: var(--accent);
+  min-width: 80px;
+  text-align: right;
+}

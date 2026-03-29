@@ -1,0 +1,26 @@
+/* App.css — Layout principal da aplicação Jarvis */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app__main {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .app__main {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}
