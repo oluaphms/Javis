@@ -1,0 +1,27 @@
+# ─── Core ─────────────────────────────────────────────────────────────────────
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+pydantic==2.6.4
+python-multipart==0.0.9
+
+# ─── Banco de Dados: Supabase ─────────────────────────────────────────────────
+supabase==2.4.1
+postgrest==0.16.2
+
+# ─── IA: Provider OpenAI e Groq (Groq usa a mesma lib openai) ─────────────────
+# Instale se tiver OPENAI_API_KEY ou GROQ_API_KEY
+openai==1.14.3
+
+# ─── IA: Provider Google Gemini ───────────────────────────────────────────────
+# Instale se tiver GEMINI_API_KEY
+# pip install google-generativeai
+# google-generativeai==0.5.0
+
+# ─── Voz ──────────────────────────────────────────────────────────────────────
+pyttsx3==2.90
+SpeechRecognition==3.10.1
+
+# PyAudio é necessário para SpeechRecognition usar microfone
+# Windows: pip install pyaudio
+# Ubuntu:  sudo apt-get install portaudio19-dev && pip install pyaudio
+# pyaudio==0.2.14
