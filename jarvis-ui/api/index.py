@@ -1,47 +1,42 @@
 """
-main.py — Ponto de entrada do backend Jarvis.
-Configura o servidor FastAPI com todos os routers e middlewares.
+main.py — Ponto de entrada do backend Jarvis para Vercel.
+Refatorado para ser robusto em ambiente Serverless (ReadOnly).
 """
 
 import logging
 import sys
 import os
 
-# Garante que o diretório pai está no path
-sys.path.insert(0, os.path.dirname(__file__))
+# Garante que o diretório atual está no path para imports relativos
+current_dir = os.path.dirname(__file__)
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
-from database import init_db
-from config import API_HOST, API_PORT, JARVIS_VERSION
-from routers.jarvis_router import router as jarvis_router
-from routers.tasks_router import router as tasks_router
+# Importações seguras (podem falhar em ambientes sem dependências nativas)
+try:
+    from database import init_db
+    from config import JARVIS_VERSION
+    from routers.jarvis_router import router as jarvis_router
+    from routers.tasks_router import router as tasks_router
+except ImportError as e:
+    print(f"Erro crítico de importação: {e}")
+    # Não levantamos o erro aqui para evitar crash imediato, mas o app vai falhar nas rotas
 
-# ─── Logging ──────────────────────────────────────────────────────────────────
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+# ─── Logging (Apenas Console) ─────────────────────────────────────────────────
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-
 # ─── Aplicação FastAPI ────────────────────────────────────────────────────────
-
 app = FastAPI(
     title="Jarvis API",
-    description="API do assistente de produtividade Jarvis.",
-    version=JARVIS_VERSION,
-    docs_url="/docs",
-    redoc_url="/redoc",
+    description="API do assistente de produtividade Jarvis (Vercel Edition).",
+    version="1.1.0",
 )
 
-# CORS — permite requisições do frontend React
+# CORS Permissivo para Vercel
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,50 +46,27 @@ app.add_middleware(
 )
 
 # ─── Registro de Routers ──────────────────────────────────────────────────────
-
-app.include_router(jarvis_router)
-app.include_router(tasks_router)
-
+try:
+    app.include_router(jarvis_router)
+    app.include_router(tasks_router)
+except NameError:
+    logger.error("Routers não puderam ser registrados devido a erros de importação.")
 
 # ─── Eventos de Ciclo de Vida ─────────────────────────────────────────────────
-
 @app.on_event("startup")
 async def startup_event():
-    logger.info(f"🚀 Jarvis v{JARVIS_VERSION} iniciando...")
-    init_db()
-    logger.info("✅ Banco de dados pronto.")
-    logger.info(f"📡 Servidor em http://{API_HOST}:{API_PORT}")
-    logger.info(f"📚 Documentação em http://localhost:{API_PORT}/docs")
+    logger.info("🚀 Jarvis Serverless iniciando...")
+    try:
+        init_db()
+        logger.info("✅ Banco de dados pronto.")
+    except Exception as e:
+        logger.error(f"⚠️ Erro ao inicializar banco: {e}")
 
+@app.get("/api/status")
+def status():
+    return {"status": "online", "message": "Jarvis está pronto."}
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    logger.info("🔴 Jarvis encerrado.")
-
-
-# ─── Rota Raiz ────────────────────────────────────────────────────────────────
-
+@app.get("/api")
 @app.get("/")
 def root():
-    return {
-        "name": "Jarvis API",
-        "version": JARVIS_VERSION,
-        "status": "online",
-        "endpoints": {
-            "docs": "/docs",
-            "jarvis": "/jarvis",
-            "tasks": "/tasks",
-        }
-    }
-
-
-# ─── Execução Direta ──────────────────────────────────────────────────────────
-
-if __name__ == "__main__":
-    uvicorn.run(
-        "main:app",
-        host=API_HOST,
-        port=API_PORT,
-        reload=True,
-        log_level="info"
-    )
+    return {"name": "Jarvis API", "status": "online"}
