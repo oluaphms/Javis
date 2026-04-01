@@ -1,11 +1,17 @@
 /**
  * useWebSpeech.js — Hook completo de voz via Web Speech API nativa do browser.
  *
+ * Funcionalidades:
+ *   - Speech-to-Text:  SpeechRecognition (captura contínua ou única)
+ *   - Text-to-Speech:  SpeechSynthesis (fala a resposta do Jarvis)
+ *
  * Nota: no Chrome/Edge o STT em pt-BR usa serviço em nuvem; erro "network"
  * indica falha de rede/firewall/VPN ao contatar esse serviço.
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+
+// ─── Detecção de Suporte ──────────────────────────────────────────────────────
 
 const SpeechRecognitionAPI =
   window.SpeechRecognition ||
@@ -21,6 +27,54 @@ export const SPEECH_SUPPORTED = {
 
 const STT_LANG = "pt-BR";
 
+const FEMALE_NAME = /female|feminino|feminina|mulher|woman|maria|helena|zira|francisca|luciana|camila|juliana|vit[oó]ria|\bana\b/i;
+const MALE_NAME = /male|masculino|masculina|homem|man|daniel|jorge|paulo|thiago|henrique|david|antonio|felipe|bruno|james/i;
+
+function isPtVoice(v) {
+  const L = (v.lang || "").toLowerCase();
+  return L.startsWith("pt") || L === "pt-br";
+}
+
+function soundsFemale(v) {
+  return v && FEMALE_NAME.test(v.name);
+}
+
+function soundsMale(v) {
+  return v && MALE_NAME.test(v.name);
+}
+
+/** Escolhe SpeechSynthesisVoice conforme gênero (heurística por nome do sistema). */
+function pickVoiceForGender(voices, gender) {
+  if (!voices?.length) return null;
+  const pt = voices.filter(isPtVoice);
+  const pool = pt.length ? pt : voices;
+
+  if (gender === "auto") {
+    return (
+      pool.find((v) => v.lang === "pt-BR" && (v.name.includes("Google") || v.name.includes("Natural"))) ||
+      pool.find((v) => v.lang === "pt-BR") ||
+      pool[0] ||
+      voices[0]
+    );
+  }
+
+  if (gender === "female") {
+    const f = pool.find(soundsFemale);
+    if (f) return f;
+    return pool[0] || voices[0];
+  }
+
+  if (gender === "male") {
+    const m = pool.find(soundsMale);
+    if (m) return m;
+    const notFemale = pool.find((v) => !soundsFemale(v));
+    return notFemale || pool[0] || voices[0];
+  }
+
+  return pool[0] || voices[0];
+}
+
+/** Mensagens para SpeechRecognitionErrorEvent.error (códigos em inglês). */
 function messageForSttError(code) {
   const messages = {
     network:
@@ -51,6 +105,7 @@ export function useWebSpeech() {
   const recognizerRef = useRef(null);
   const onResultRef = useRef(null);
   const silenceTimerRef = useRef(null);
+  /** Último texto reconhecido (onend não pode usar state — closure desatualizado). */
   const transcriptRef = useRef("");
 
   const _clearSilenceTimer = useCallback(() => {
@@ -184,14 +239,15 @@ export function useWebSpeech() {
     utterance.volume = options.volume ?? 1.0;
 
     const voices = synthAPI.getVoices();
-    const voz =
-      voices.find(
-        (v) => v.lang === "pt-BR" && (v.name.includes("Google") || v.name.includes("Natural"))
-      ) ||
-      voices.find((v) => v.lang === "pt-BR") ||
-      voices[0];
+    const gender = options.voiceGender || "auto";
+    const voz = pickVoiceForGender(voices, gender);
+    if (voz) utterance.voice = voz;
 
-    utterance.voice = voz;
+    if (gender === "female" && !soundsFemale(voz)) {
+      utterance.pitch = Math.min(1.15, (options.pitch ?? 1) * 1.08);
+    } else if (gender === "male" && !soundsMale(voz)) {
+      utterance.pitch = Math.max(0.82, (options.pitch ?? 1) * 0.92);
+    }
 
     utterance.onstart = () => setSpeaking(true);
     utterance.onend = () => {

@@ -33,7 +33,10 @@ if DB_ONLINE:
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
         logger.info("📡 Conexão estabilizada com Supabase Cloud.")
     except ImportError:
-        logger.warning("⚠️ Biblioteca 'supabase' não encontrada (pip install supabase). Usando SQLite.")
+        logger.warning("⚠️ Biblioteca 'supabase' não encontrada. Usando SQLite.")
+        supabase = None
+    except Exception as e:
+        logger.warning(f"⚠️ Falha ao conectar Supabase: {e}. Usando SQLite.")
         supabase = None
 
 # Fallback para SQLite
@@ -112,12 +115,14 @@ def task_create(title: str, description: str = "", priority: str = "media") -> D
             task_data["id"] = cursor.lastrowid
             return task_data
 
-def task_list(status: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+def task_list(status: Optional[str] = None, priority: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
     if supabase:
         try:
             query = supabase.table("tasks").select("*")
             if status:
                 query = query.eq("status", status)
+            if priority:
+                query = query.eq("priority", priority)
             response = query.order("created_at", desc=True).limit(limit).execute()
             return [dict(r) for r in response.data] if response.data else []
         except Exception as e:
@@ -125,9 +130,16 @@ def task_list(status: Optional[str] = None, limit: int = 50) -> List[Dict[str, A
             return []
     else:
         with _sqlite_conn() as conn:
-            where = "WHERE status = ?" if status else ""
-            params = (status,) if status else ()
-            rows = conn.execute(f"SELECT * FROM tasks {where} ORDER BY created_at DESC LIMIT ?", params + (limit,)).fetchall()
+            conditions = []
+            params = []
+            if status:
+                conditions.append("status = ?")
+                params.append(status)
+            if priority:
+                conditions.append("priority = ?")
+                params.append(priority)
+            where = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+            rows = conn.execute(f"SELECT * FROM tasks {where} ORDER BY created_at DESC LIMIT ?", params + [limit]).fetchall()
             return [dict(r) for r in rows]
 
 def task_update(task_id: int, **fields) -> Optional[Dict[str, Any]]:

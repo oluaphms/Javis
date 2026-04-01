@@ -1,0 +1,89 @@
+/* index.css — Sistema de design global do Jarvis */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* Cores */
+  --bg: #050a0f;
+  --surface: #0a1220;
+  --surface-2: #0d1829;
+  --border: rgba(0, 212, 255, 0.1);
+  --accent: #00d4ff;
+  --accent-dark: #0077ff;
+  --text: #e2eaf4;
+  --text-muted: #4a6380;
+
+  /* Tipografia */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+
+  /* Efeitos */
+  --glow: 0 0 20px rgba(0, 212, 255, 0.15);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Background Animado ─────────────────────────────────────────────────────── */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 119, 255, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(0, 212, 255, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid de fundo */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Scrollbar Global ───────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.2); }
+
+/* ─── Seleção ────────────────────────────────────────────────────────────────── */
+
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+  color: var(--text);
+}

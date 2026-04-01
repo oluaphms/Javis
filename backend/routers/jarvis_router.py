@@ -20,6 +20,8 @@ class QueryRequest(BaseModel):
     text: str
     speak: Optional[bool] = False
     confirm_dangerous: Optional[bool] = False
+    system_prompt: Optional[str] = None
+    skills: Optional[str] = None
 
 
 class QueryResponse(BaseModel):
@@ -101,7 +103,11 @@ def handle_query(body: QueryRequest, background_tasks: BackgroundTasks):
         ai_intent        = "comando_sistema"
     else:
         # 2. Nenhum comando reconhecido → envia para IA
-        ai_response  = ai.process_query_detailed(text)
+        ai_response  = ai.process_query_detailed(
+            text,
+            body.system_prompt,
+            body.skills,
+        )
         reply        = ai_response.text
         ai_provider  = ai_response.provider
         ai_intent    = ai_response.intent

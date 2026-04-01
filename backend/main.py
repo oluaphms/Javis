@@ -42,10 +42,15 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS — permite requisições do frontend React
+# CORS — permite requisições do frontend React (local e web)
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3008,http://127.0.0.1:3008"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,8 +58,8 @@ app.add_middleware(
 
 # ─── Registro de Routers ──────────────────────────────────────────────────────
 
-app.include_router(jarvis_router)
-app.include_router(tasks_router)
+app.include_router(jarvis_router, prefix="/api")
+app.include_router(tasks_router, prefix="/api")
 
 
 # ─── Eventos de Ciclo de Vida ─────────────────────────────────────────────────

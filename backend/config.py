@@ -4,6 +4,16 @@ Altere as variáveis aqui para personalizar o comportamento do sistema.
 """
 
 import os
+from pathlib import Path
+
+# Carrega .env do diretório do backend
+_env_path = Path(__file__).parent / ".env"
+if _env_path.exists():
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(_env_path)
+    except ImportError:
+        pass  # python-dotenv não instalado, usa variáveis de ambiente do sistema
 
 # ─── Banco de dados ───────────────────────────────────────────────────────────
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'database', 'tasks.db')
@@ -15,7 +25,7 @@ DB_ONLINE = bool(SUPABASE_URL and SUPABASE_KEY)
 
 # ─── Servidor ─────────────────────────────────────────────────────────────────
 API_HOST = "0.0.0.0"
-API_PORT = 8000
+API_PORT = 8008
 
 # ─── IA: Configuração de Providers ───────────────────────────────────────────
 #

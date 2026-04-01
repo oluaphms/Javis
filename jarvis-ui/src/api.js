@@ -3,7 +3,7 @@
  * Todos os acessos à API passam por aqui.
  */
 
-const BASE_URL = process.env.REACT_APP_API_URL || "/api";
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
 
 async function request(method, path, body = null) {
   const options = {
